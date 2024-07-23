@@ -1,19 +1,15 @@
-﻿using System;
-using System.Diagnostics;
-using System.Security.Cryptography.Xml;
-using System.Linq;
+﻿using Renci.SshNet;
+using System;
 using WinSCP;
-using System.IO;
-using System.Reflection;
 
 namespace FTPManagement
 {
     class TSFTP
     {
-        private Session session;
+        private WinSCP.Session session;
         private SessionOptions sessionOptions;
 
-        public delegate void ProgressReportHandler(string message, int percentage);
+        public delegate void ProgressReportHandler(string message, int percentage, bool status = true);
         public event ProgressReportHandler OnProgressReport;
 
         public TSFTP(string host, string port, string username, string password, string privateKeyPath)
@@ -37,9 +33,9 @@ namespace FTPManagement
             }
         }
 
-        public Session Connect()
+        public WinSCP.Session Connect()
         {
-            session = new Session();
+            session = new WinSCP.Session();
 
             try
             {
@@ -90,7 +86,7 @@ namespace FTPManagement
             }
             catch (Exception e)
             {
-                OnProgressReport?.Invoke($"Upload failed: {e.Message}", 0);
+                OnProgressReport?.Invoke($"Upload failed: {e.Message}", 0, false);
                 throw;
             }
         }
@@ -99,7 +95,7 @@ namespace FTPManagement
         {
             if (!DirectoryExists(remotePath))
             {
-                OnProgressReport?.Invoke("Directory does not exist: " + remotePath, 0);
+                OnProgressReport?.Invoke("Directory does not exist: " + remotePath, 0, false);
                 return;
             }
 
@@ -111,7 +107,7 @@ namespace FTPManagement
             }
             catch (Exception ex)
             {
-                OnProgressReport?.Invoke($"Error deleting directory: {ex.Message}", 0);
+                OnProgressReport?.Invoke($"Error deleting directory: {ex.Message}", 0, false);
             }
         }
 
@@ -143,6 +139,72 @@ namespace FTPManagement
                     session.CreateDirectory(currentPath);
                 }
             }
+        }
+
+        public void CmdFTP(string scriptPath)
+        {
+            try
+            {
+                RemoteFileInfo fileInfo = session.GetFileInfo(scriptPath);
+                if (fileInfo == null)
+                {
+                    string errorText = $"File not found";
+                    throw new NotSupportedException(errorText);
+                }
+                OnProgressReport?.Invoke("Execute cmd: " + scriptPath, 0);
+                int dotIndex = scriptPath.LastIndexOf('.');
+                if (dotIndex < 0)
+                {
+                    OnProgressReport?.Invoke($"Error run cmd: File not found", 0, false);
+                    return;
+                }
+                string name = scriptPath.Substring(0, dotIndex);
+                string extension = scriptPath.Substring(dotIndex);
+                OnProgressReport?.Invoke("Start connect cmd", 30);
+                using (var sshClient = new SshClient(sessionOptions.HostName, sessionOptions.UserName, sessionOptions.Password))
+                {
+                    OnProgressReport?.Invoke("Start check type file", 40);
+                    sshClient.Connect();
+                    OnProgressReport?.Invoke("Connect cmd", 50);
+                    string command;
+                    switch (extension)
+                    {
+                        case ".sh":
+                        case ".bash":
+                            OnProgressReport?.Invoke($"Run chmod +x", 55);
+                            sshClient.RunCommand($"chmod +x {scriptPath}");
+                            command = $"{scriptPath}";
+                            break;
+                        case ".ts":
+                        case ".js":
+                            command = $"node {scriptPath}";
+                            break;
+                        default:
+                            string errorText = $"Script file extension '{extension}' not supported.";
+                            throw new NotSupportedException(errorText);
+                    }
+                    OnProgressReport?.Invoke($"Run cmd {extension}", 60);
+                    var sshCommand = sshClient.RunCommand(command);
+                    var commandResult = sshCommand.Execute();
+                    OnProgressReport?.Invoke($"Result:", 60);
+                    using (var reader = new System.IO.StringReader(commandResult))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            OnProgressReport?.Invoke($"{line}", 60);
+                        }
+                    }
+                    OnProgressReport?.Invoke($"End cmd {extension}", 90);
+                    sshClient.Disconnect();
+                    OnProgressReport?.Invoke("Disconnect cmd: " + scriptPath, 100);
+                }
+            }
+            catch (Exception ex)
+            {
+                OnProgressReport?.Invoke($"Error run cmd: {ex.Message}", 0, false);
+            }
+            session.Close();
         }
     }
 }

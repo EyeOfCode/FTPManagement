@@ -251,7 +251,10 @@ namespace FTPManagement
                         lsbProjectList.Items.Add(name);
                     }
                 }
-                lsbProjectList.SelectedIndex = 0;
+                if (lsbProjectList.Items.Count > 0)
+                {
+                    lsbProjectList.SelectedIndex = 0;
+                }
             }
         }
 
@@ -350,14 +353,18 @@ namespace FTPManagement
             }
         }
 
-        private void btnUploadFTP_Click(object sender, EventArgs e)
+        private void uploadFTP()
         {
             try
             {
+                string selectedItem = lsbProjectList.SelectedItem.ToString();
+                if (selectedItem.Equals(string.Empty))
+                {
+                    return;
+                }
                 logs.BringToFront();
                 Invoke(new Action(() => tsProgressBar.Value = 0));
                 tsStatusOther.Text = "Starting connect...";
-                string selectedItem = lsbProjectList.SelectedItem.ToString();
                 string configName = $"SFTP_{selectedItem.ToUpper()}";
                 LoadConfig("SFTP", selectedItem);
                 TSFTP sftp = new TSFTP(configData[configName]["host"], configData[configName]["port"], configData[configName]["username"], configData[configName]["password"], configData[configName]["privateKeyPath"]);
@@ -376,35 +383,77 @@ namespace FTPManagement
             tsStatusOther.ForeColor = Color.Black;
             tsStatusOther.Text = "";
             lbLogs.Items.Clear();
+        }
+
+        private void btnUploadFTP_Click(object sender, EventArgs e)
+        {
+            uploadFTP();
             ftpConfig.BringToFront();
         }
 
-        private void UpdateProgress(string message, int percentage)
+        private void UpdateProgress(string message, int percentage, bool status = true)
         {
             if (InvokeRequired)
             {
-                Invoke(new Action(() => UpdateProgress(message, percentage)));
+                Invoke(new Action(() => UpdateProgress(message, percentage, status)));
                 return;
             }
-            tsStatusOther.ForeColor = Color.Green;
+            tsStatusOther.ForeColor = status ? Color.Green : Color.Red;
             tsProgressBar.Value = percentage;
-            tsStatusOther.Text = message + Environment.NewLine;
             lbLogs.Items.Add(message + Environment.NewLine);
+            lbLogs.ForeColor = status ? Color.Green : Color.Red;
+        }
+
+        private void runCmdFTP()
+        {
+            try
+            {
+                string selectedItem = lsbProjectList.SelectedItem.ToString();
+                if (selectedItem.Equals(string.Empty))
+                {
+                    return;
+                }
+                logs.BringToFront();
+                Invoke(new Action(() => tsProgressBar.Value = 0));
+                tsStatusOther.Text = "Starting connect...";
+                string configName = $"SFTP_{selectedItem.ToUpper()}";
+                LoadConfig("SFTP", selectedItem);
+                TSFTP sftp = new TSFTP(configData[configName]["host"], configData[configName]["port"], configData[configName]["username"], configData[configName]["password"], configData[configName]["privateKeyPath"]);
+                Session session = sftp.Connect();
+                Invoke(new Action(() => tsProgressBar.Value = 100));
+                tsStatusOther.Text = "Starting cmd script...";
+                sftp.OnProgressReport += UpdateProgress;
+                sftp.CmdFTP(configData[configName]["scriptPath"]);
+                MessageBox.Show("Run Cmd success!!", "CMD FTP", MessageBoxButtons.OK);
+            }
+            catch
+            {
+                MessageBox.Show("Run Cmd fail!!", "CMD FTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            tsStatusOther.ForeColor = Color.Black;
+            tsStatusOther.Text = "";
+            lbLogs.Items.Clear();
+            Invoke(new Action(() => tsProgressBar.Value = 0));
         }
 
         private void btnCmd_Click(object sender, EventArgs e)
         {
-
+            runCmdFTP();
+            ftpConfig.BringToFront();
         }
 
-        private void btnDropFTP_Click(object sender, EventArgs e)
+        private void dropFTP()
         {
             try
             {
+                string selectedItem = lsbProjectList.SelectedItem.ToString();
+                if (selectedItem.Equals(string.Empty))
+                {
+                    return;
+                }
                 logs.BringToFront();
                 Invoke(new Action(() => tsProgressBar.Value = 0));
                 tsStatusOther.Text = "Starting connect...";
-                string selectedItem = lsbProjectList.SelectedItem.ToString();
                 string configName = $"SFTP_{selectedItem.ToUpper()}";
                 LoadConfig("SFTP", selectedItem);
                 TSFTP sftp = new TSFTP(configData[configName]["host"], configData[configName]["port"], configData[configName]["username"], configData[configName]["password"], configData[configName]["privateKeyPath"]);
@@ -423,7 +472,42 @@ namespace FTPManagement
             tsStatusOther.Text = "";
             lbLogs.Items.Clear();
             Invoke(new Action(() => tsProgressBar.Value = 0));
+        }
+
+        private void btnDropFTP_Click(object sender, EventArgs e)
+        {
+            dropFTP();
             ftpConfig.BringToFront();
+        }
+
+        private void btnQtUpload_Click(object sender, EventArgs e)
+        {
+            DialogResult confirm = MessageBox.Show("Upload!!", "Upload", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (confirm == DialogResult.Yes)
+            {
+                uploadFTP();
+                main.BringToFront();
+            }
+        }
+
+        private void btnQtDrop_Click(object sender, EventArgs e)
+        {
+            DialogResult confirm = MessageBox.Show("Drop!!", "Drop", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (confirm == DialogResult.Yes)
+            {
+                dropFTP();
+                main.BringToFront();
+            }
+        }
+
+        private void btnQtCmd_Click(object sender, EventArgs e)
+        {
+            DialogResult confirm = MessageBox.Show("Cmd!!", "CMD", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (confirm == DialogResult.Yes)
+            {
+                runCmdFTP();
+                main.BringToFront();
+            }
         }
     }
 }

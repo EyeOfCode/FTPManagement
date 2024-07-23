@@ -31,6 +31,8 @@
             main = new Panel();
             lsbProjectList = new ListBox();
             gbDengerZone = new GroupBox();
+            btnQtCmd = new Button();
+            btnQtDrop = new Button();
             btnQtUpload = new Button();
             gbManageZone = new GroupBox();
             btnDetailFTP = new Button();
@@ -87,7 +89,7 @@
             main.Controls.Add(gbManageZone);
             main.Location = new Point(0, 0);
             main.Name = "main";
-            main.Size = new Size(799, 425);
+            main.Size = new Size(799, 421);
             main.TabIndex = 1;
             // 
             // lsbProjectList
@@ -99,6 +101,8 @@
             // 
             // gbDengerZone
             // 
+            gbDengerZone.Controls.Add(btnQtCmd);
+            gbDengerZone.Controls.Add(btnQtDrop);
             gbDengerZone.Controls.Add(btnQtUpload);
             gbDengerZone.Location = new Point(539, 9);
             gbDengerZone.Name = "gbDengerZone";
@@ -107,14 +111,35 @@
             gbDengerZone.TabStop = false;
             gbDengerZone.Text = "DangerZone";
             // 
+            // btnQtCmd
+            // 
+            btnQtCmd.Location = new Point(29, 100);
+            btnQtCmd.Name = "btnQtCmd";
+            btnQtCmd.Size = new Size(200, 31);
+            btnQtCmd.TabIndex = 6;
+            btnQtCmd.Text = "Cmd";
+            btnQtCmd.UseVisualStyleBackColor = true;
+            btnQtCmd.Click += btnQtCmd_Click;
+            // 
+            // btnQtDrop
+            // 
+            btnQtDrop.Location = new Point(29, 70);
+            btnQtDrop.Name = "btnQtDrop";
+            btnQtDrop.Size = new Size(200, 31);
+            btnQtDrop.TabIndex = 5;
+            btnQtDrop.Text = "Drop";
+            btnQtDrop.UseVisualStyleBackColor = true;
+            btnQtDrop.Click += btnQtDrop_Click;
+            // 
             // btnQtUpload
             // 
-            btnQtUpload.Location = new Point(29, 41);
+            btnQtUpload.Location = new Point(29, 40);
             btnQtUpload.Name = "btnQtUpload";
             btnQtUpload.Size = new Size(200, 31);
             btnQtUpload.TabIndex = 4;
             btnQtUpload.Text = "Upload";
             btnQtUpload.UseVisualStyleBackColor = true;
+            btnQtUpload.Click += btnQtUpload_Click;
             // 
             // gbManageZone
             // 
@@ -201,7 +226,7 @@
             ftpConfig.Controls.Add(gbFTP);
             ftpConfig.Location = new Point(0, 0);
             ftpConfig.Name = "ftpConfig";
-            ftpConfig.Size = new Size(800, 425);
+            ftpConfig.Size = new Size(800, 421);
             ftpConfig.TabIndex = 4;
             // 
             // gbFTP
@@ -232,7 +257,7 @@
             gbFTP.Controls.Add(label1);
             gbFTP.Controls.Add(btnCancelFTPConfig);
             gbFTP.Controls.Add(btnSaveFTPConfig);
-            gbFTP.Location = new Point(13, 17);
+            gbFTP.Location = new Point(10, 16);
             gbFTP.Name = "gbFTP";
             gbFTP.Size = new Size(777, 399);
             gbFTP.TabIndex = 0;
@@ -489,9 +514,9 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(logs);
-            Controls.Add(ftpConfig);
             Controls.Add(main);
+            Controls.Add(ftpConfig);
+            Controls.Add(logs);
             Controls.Add(footer);
             Name = "FTPManagement";
             Text = "FTPManagement";
@@ -552,5 +577,7 @@
         private TextBox txtbScriptDir;
         private Label label8;
         private Panel logs;
+        private Button btnQtDrop;
+        private Button btnQtCmd;
     }
 }
