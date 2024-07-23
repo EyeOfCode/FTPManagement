@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FTPManagement));
             main = new Panel();
             lsbProjectList = new ListBox();
             gbDengerZone = new GroupBox();
@@ -518,6 +519,7 @@
             Controls.Add(ftpConfig);
             Controls.Add(logs);
             Controls.Add(footer);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FTPManagement";
             Text = "FTPManagement";
             main.ResumeLayout(false);
