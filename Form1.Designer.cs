@@ -31,6 +31,7 @@
             main = new Panel();
             lsbProjectList = new ListBox();
             gbDengerZone = new GroupBox();
+            btnQtUpload = new Button();
             gbManageZone = new GroupBox();
             btnDetailFTP = new Button();
             btnDeleteFTP = new Button();
@@ -42,6 +43,11 @@
             tsStatusOther = new ToolStripStatusLabel();
             ftpConfig = new Panel();
             gbFTP = new GroupBox();
+            txtbScriptDir = new TextBox();
+            label8 = new Label();
+            btnDropFTP = new Button();
+            btnCmd = new Button();
+            btnUploadFTP = new Button();
             txtbConfigName = new TextBox();
             label3 = new Label();
             btnTestConnectFTP = new Button();
@@ -63,13 +69,15 @@
             label1 = new Label();
             btnCancelFTPConfig = new Button();
             btnSaveFTPConfig = new Button();
-            btnQtUpload = new Button();
+            lbLogs = new ListBox();
+            logs = new Panel();
             main.SuspendLayout();
             gbDengerZone.SuspendLayout();
             gbManageZone.SuspendLayout();
             footer.SuspendLayout();
             ftpConfig.SuspendLayout();
             gbFTP.SuspendLayout();
+            logs.SuspendLayout();
             SuspendLayout();
             // 
             // main
@@ -98,6 +106,15 @@
             gbDengerZone.TabIndex = 1;
             gbDengerZone.TabStop = false;
             gbDengerZone.Text = "DangerZone";
+            // 
+            // btnQtUpload
+            // 
+            btnQtUpload.Location = new Point(29, 41);
+            btnQtUpload.Name = "btnQtUpload";
+            btnQtUpload.Size = new Size(200, 31);
+            btnQtUpload.TabIndex = 4;
+            btnQtUpload.Text = "Upload";
+            btnQtUpload.UseVisualStyleBackColor = true;
             // 
             // gbManageZone
             // 
@@ -189,6 +206,11 @@
             // 
             // gbFTP
             // 
+            gbFTP.Controls.Add(txtbScriptDir);
+            gbFTP.Controls.Add(label8);
+            gbFTP.Controls.Add(btnDropFTP);
+            gbFTP.Controls.Add(btnCmd);
+            gbFTP.Controls.Add(btnUploadFTP);
             gbFTP.Controls.Add(txtbConfigName);
             gbFTP.Controls.Add(label3);
             gbFTP.Controls.Add(btnTestConnectFTP);
@@ -217,6 +239,55 @@
             gbFTP.TabStop = false;
             gbFTP.Text = "FTP Config";
             // 
+            // txtbScriptDir
+            // 
+            txtbScriptDir.Location = new Point(147, 261);
+            txtbScriptDir.Name = "txtbScriptDir";
+            txtbScriptDir.Size = new Size(558, 27);
+            txtbScriptDir.TabIndex = 27;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(33, 264);
+            label8.Name = "label8";
+            label8.Size = new Size(95, 20);
+            label8.TabIndex = 26;
+            label8.Text = "Target Script:";
+            // 
+            // btnDropFTP
+            // 
+            btnDropFTP.Location = new Point(260, 359);
+            btnDropFTP.Name = "btnDropFTP";
+            btnDropFTP.Size = new Size(121, 31);
+            btnDropFTP.TabIndex = 25;
+            btnDropFTP.Text = "Drop";
+            btnDropFTP.UseVisualStyleBackColor = true;
+            btnDropFTP.Visible = false;
+            btnDropFTP.Click += btnDropFTP_Click;
+            // 
+            // btnCmd
+            // 
+            btnCmd.Location = new Point(387, 359);
+            btnCmd.Name = "btnCmd";
+            btnCmd.Size = new Size(121, 31);
+            btnCmd.TabIndex = 24;
+            btnCmd.Text = "Cmd";
+            btnCmd.UseVisualStyleBackColor = true;
+            btnCmd.Visible = false;
+            btnCmd.Click += btnCmd_Click;
+            // 
+            // btnUploadFTP
+            // 
+            btnUploadFTP.Location = new Point(133, 359);
+            btnUploadFTP.Name = "btnUploadFTP";
+            btnUploadFTP.Size = new Size(121, 31);
+            btnUploadFTP.TabIndex = 23;
+            btnUploadFTP.Text = "Upload";
+            btnUploadFTP.UseVisualStyleBackColor = true;
+            btnUploadFTP.Visible = false;
+            btnUploadFTP.Click += btnUploadFTP_Click;
+            // 
             // txtbConfigName
             // 
             txtbConfigName.Location = new Point(147, 303);
@@ -237,7 +308,7 @@
             // 
             btnTestConnectFTP.Location = new Point(6, 359);
             btnTestConnectFTP.Name = "btnTestConnectFTP";
-            btnTestConnectFTP.Size = new Size(121, 24);
+            btnTestConnectFTP.Size = new Size(121, 31);
             btnTestConnectFTP.TabIndex = 20;
             btnTestConnectFTP.Text = "Test";
             btnTestConnectFTP.UseVisualStyleBackColor = true;
@@ -245,7 +316,7 @@
             // 
             // btnOpenDirLocal
             // 
-            btnOpenDirLocal.Location = new Point(711, 257);
+            btnOpenDirLocal.Location = new Point(711, 174);
             btnOpenDirLocal.Name = "btnOpenDirLocal";
             btnOpenDirLocal.Size = new Size(44, 27);
             btnOpenDirLocal.TabIndex = 19;
@@ -255,7 +326,7 @@
             // 
             // txtbLocalDir
             // 
-            txtbLocalDir.Location = new Point(147, 257);
+            txtbLocalDir.Location = new Point(147, 174);
             txtbLocalDir.Name = "txtbLocalDir";
             txtbLocalDir.Size = new Size(558, 27);
             txtbLocalDir.TabIndex = 18;
@@ -263,7 +334,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(12, 260);
+            label7.Location = new Point(12, 177);
             label7.Name = "label7";
             label7.Size = new Size(116, 20);
             label7.TabIndex = 17;
@@ -271,15 +342,15 @@
             // 
             // txtbTargetDir
             // 
-            txtbTargetDir.Location = new Point(147, 210);
+            txtbTargetDir.Location = new Point(147, 219);
             txtbTargetDir.Name = "txtbTargetDir";
-            txtbTargetDir.Size = new Size(266, 27);
+            txtbTargetDir.Size = new Size(558, 27);
             txtbTargetDir.TabIndex = 16;
             // 
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(6, 213);
+            label6.Location = new Point(6, 222);
             label6.Name = "label6";
             label6.Size = new Size(122, 20);
             label6.TabIndex = 15;
@@ -287,7 +358,7 @@
             // 
             // btnOpenFileFTP
             // 
-            btnOpenFileFTP.Location = new Point(711, 163);
+            btnOpenFileFTP.Location = new Point(711, 129);
             btnOpenFileFTP.Name = "btnOpenFileFTP";
             btnOpenFileFTP.Size = new Size(44, 27);
             btnOpenFileFTP.TabIndex = 14;
@@ -297,7 +368,7 @@
             // 
             // txtbPPKFile
             // 
-            txtbPPKFile.Location = new Point(147, 163);
+            txtbPPKFile.Location = new Point(147, 129);
             txtbPPKFile.Name = "txtbPPKFile";
             txtbPPKFile.Size = new Size(558, 27);
             txtbPPKFile.TabIndex = 13;
@@ -306,6 +377,7 @@
             // 
             txtbPassword.Location = new Point(502, 70);
             txtbPassword.Name = "txtbPassword";
+            txtbPassword.PasswordChar = '*';
             txtbPassword.Size = new Size(266, 27);
             txtbPassword.TabIndex = 12;
             // 
@@ -333,7 +405,7 @@
             // ckIsPrivateKey
             // 
             ckIsPrivateKey.AutoSize = true;
-            ckIsPrivateKey.Location = new Point(17, 165);
+            ckIsPrivateKey.Location = new Point(17, 131);
             ckIsPrivateKey.Name = "ckIsPrivateKey";
             ckIsPrivateKey.Size = new Size(128, 24);
             ckIsPrivateKey.TabIndex = 7;
@@ -380,7 +452,7 @@
             // 
             btnCancelFTPConfig.Location = new Point(648, 359);
             btnCancelFTPConfig.Name = "btnCancelFTPConfig";
-            btnCancelFTPConfig.Size = new Size(121, 24);
+            btnCancelFTPConfig.Size = new Size(121, 31);
             btnCancelFTPConfig.TabIndex = 1;
             btnCancelFTPConfig.Text = "Cancel";
             btnCancelFTPConfig.UseVisualStyleBackColor = true;
@@ -388,30 +460,38 @@
             // 
             // btnSaveFTPConfig
             // 
-            btnSaveFTPConfig.Location = new Point(521, 359);
+            btnSaveFTPConfig.Location = new Point(647, 322);
             btnSaveFTPConfig.Name = "btnSaveFTPConfig";
-            btnSaveFTPConfig.Size = new Size(121, 24);
+            btnSaveFTPConfig.Size = new Size(121, 31);
             btnSaveFTPConfig.TabIndex = 0;
             btnSaveFTPConfig.Text = "Save";
             btnSaveFTPConfig.UseVisualStyleBackColor = true;
             btnSaveFTPConfig.Click += btnSaveFTPConfig_Click;
             // 
-            // btnQtUpload
+            // lbLogs
             // 
-            btnQtUpload.Location = new Point(29, 41);
-            btnQtUpload.Name = "btnQtUpload";
-            btnQtUpload.Size = new Size(200, 31);
-            btnQtUpload.TabIndex = 4;
-            btnQtUpload.Text = "Upload";
-            btnQtUpload.UseVisualStyleBackColor = true;
+            lbLogs.FormattingEnabled = true;
+            lbLogs.Location = new Point(9, 12);
+            lbLogs.Name = "lbLogs";
+            lbLogs.Size = new Size(779, 404);
+            lbLogs.TabIndex = 5;
+            // 
+            // logs
+            // 
+            logs.Controls.Add(lbLogs);
+            logs.Location = new Point(0, 0);
+            logs.Name = "logs";
+            logs.Size = new Size(797, 420);
+            logs.TabIndex = 1;
             // 
             // FTPManagement
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(main);
+            Controls.Add(logs);
             Controls.Add(ftpConfig);
+            Controls.Add(main);
             Controls.Add(footer);
             Name = "FTPManagement";
             Text = "FTPManagement";
@@ -423,6 +503,7 @@
             ftpConfig.ResumeLayout(false);
             gbFTP.ResumeLayout(false);
             gbFTP.PerformLayout();
+            logs.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -464,5 +545,12 @@
         private ToolStripStatusLabel tsStatusOther;
         private Button btnDetailFTP;
         private Button btnQtUpload;
+        private Button btnUploadFTP;
+        private ListBox lbLogs;
+        private Button btnCmd;
+        private Button btnDropFTP;
+        private TextBox txtbScriptDir;
+        private Label label8;
+        private Panel logs;
     }
 }
