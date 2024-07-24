@@ -628,8 +628,8 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(webConfig);
             Controls.Add(main);
+            Controls.Add(webConfig);
             Controls.Add(ftpConfig);
             Controls.Add(logs);
             Controls.Add(footer);
