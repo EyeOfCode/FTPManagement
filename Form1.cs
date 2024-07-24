@@ -8,6 +8,9 @@ using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Reflection.Metadata.BlobBuilder;
 using System;
+using Renci.SshNet;
+using System.Security.Policy;
+using System.Net.NetworkInformation;
 
 namespace FTPManagement
 {
@@ -89,7 +92,7 @@ namespace FTPManagement
             {
                 Console.WriteLine(txtbHostName.Text);
                 TSFTP sftp = new TSFTP(txtbHostName.Text, txtbPort.Text, txtbUsername.Text, txtbPassword.Text, privateKeyPath);
-                Session session = sftp.Connect();
+                WinSCP.Session session = sftp.Connect();
                 Invoke(new Action(() => tsProgressBar.Value = 100));
                 if (sftp.IsConnected())
                 {
@@ -256,6 +259,29 @@ namespace FTPManagement
                     lsbProjectList.SelectedIndex = 0;
                 }
             }
+
+            section = "WEB_CONFIG";
+            if (_section.ToLower().Equals(section.ToLower()) || _section.Equals(string.Empty))
+            {
+                if (option != null)
+                {
+                    string configName = $"{section}_{option}";
+                    configData[configName] = new Dictionary<string, string>();
+                    configData[configName]["domain"] = config.Read("domain", configName);
+
+                    txtbDomain.Text = configData[configName]["domain"];
+                }
+                else
+                {
+                    List<string> sections = config.GetAllSections();
+                    var sftpKeys = sections.Where(key => key.StartsWith("WEB_CONFIG_"));
+                    foreach (var key in sftpKeys)
+                    {
+                        configData[key] = new Dictionary<string, string>();
+                        configData[key]["domain"] = config.Read("domain", key);
+                    }
+                }
+            }
         }
 
         private void btnEditProject_Click(object sender, EventArgs e)
@@ -368,7 +394,7 @@ namespace FTPManagement
                 string configName = $"SFTP_{selectedItem.ToUpper()}";
                 LoadConfig("SFTP", selectedItem);
                 TSFTP sftp = new TSFTP(configData[configName]["host"], configData[configName]["port"], configData[configName]["username"], configData[configName]["password"], configData[configName]["privateKeyPath"]);
-                Session session = sftp.Connect();
+                WinSCP.Session session = sftp.Connect();
                 Invoke(new Action(() => tsProgressBar.Value = 100));
                 tsStatusOther.Text = "Starting upload...";
                 sftp.OnProgressReport += UpdateProgress;
@@ -419,7 +445,7 @@ namespace FTPManagement
                 string configName = $"SFTP_{selectedItem.ToUpper()}";
                 LoadConfig("SFTP", selectedItem);
                 TSFTP sftp = new TSFTP(configData[configName]["host"], configData[configName]["port"], configData[configName]["username"], configData[configName]["password"], configData[configName]["privateKeyPath"]);
-                Session session = sftp.Connect();
+                WinSCP.Session session = sftp.Connect();
                 Invoke(new Action(() => tsProgressBar.Value = 100));
                 tsStatusOther.Text = "Starting cmd script...";
                 sftp.OnProgressReport += UpdateProgress;
@@ -457,7 +483,7 @@ namespace FTPManagement
                 string configName = $"SFTP_{selectedItem.ToUpper()}";
                 LoadConfig("SFTP", selectedItem);
                 TSFTP sftp = new TSFTP(configData[configName]["host"], configData[configName]["port"], configData[configName]["username"], configData[configName]["password"], configData[configName]["privateKeyPath"]);
-                Session session = sftp.Connect();
+                WinSCP.Session session = sftp.Connect();
                 Invoke(new Action(() => tsProgressBar.Value = 100));
                 tsStatusOther.Text = "Starting delete folder...";
                 sftp.OnProgressReport += UpdateProgress;
@@ -508,6 +534,132 @@ namespace FTPManagement
                 runCmdFTP();
                 main.BringToFront();
             }
+        }
+
+        private void btnWebConfig_Click(object sender, EventArgs e)
+        {
+            string section = "WEB_CONFIG";
+            string selectedItem = lsbProjectList.SelectedItem.ToString();
+            if (selectedItem.Equals(string.Empty))
+            {
+                return;
+            }
+            LoadConfig("WEB_CONFIG", selectedItem);
+            webConfig.BringToFront();
+        }
+
+        private void brnSaveWebConfig_Click(object sender, EventArgs e)
+        {
+            tsStatusOther.Text = "Start save web config ...";
+            string selectedItem = lsbProjectList.SelectedItem.ToString();
+            if (selectedItem.Equals(string.Empty))
+            {
+                return;
+            }
+            string section = "WEB_CONFIG";
+            Invoke(new Action(() => tsProgressBar.Value = 0));
+            string configName = $"WEB_CONFIG_{selectedItem.ToUpper()}";
+            config.Write("domain", txtbDomain.Text, configName);
+            config.Write("configName", selectedItem, configName);
+            Invoke(new Action(() => tsProgressBar.Value = 80));
+            LoadConfig(section, selectedItem);
+            tsStatusOther.ForeColor = Color.Green;
+            Invoke(new Action(() => tsProgressBar.Value = 100));
+            MessageBox.Show("Success to Update!!", "Success", MessageBoxButtons.OK);
+            Invoke(new Action(() => tsProgressBar.Value = 0));
+            tsStatusOther.ForeColor = Color.Black;
+            tsStatusOther.Text = "";
+        }
+
+        private void btnWebCancel_Click(object sender, EventArgs e)
+        {
+            main.BringToFront();
+        }
+
+        private void btnOpenWeb_Click(object sender, EventArgs e)
+        {
+            string selectedItem = lsbProjectList.SelectedItem.ToString();
+            if (selectedItem.Equals(string.Empty))
+            {
+                return;
+            }
+            string configName = $"WEB_CONFIG_{selectedItem.ToUpper()}";
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = configData[configName]["domain"],
+                UseShellExecute = true
+            });
+        }
+
+        private void btnPingWeb_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string selectedItem = lsbProjectList.SelectedItem.ToString();
+                if (selectedItem.Equals(string.Empty))
+                {
+                    return;
+                }
+                logs.BringToFront();
+                lbLogs.Items.Clear();
+                tsStatusOther.Text = "Start ping ...";
+                UpdateProgress("Start ping...", 0);
+                string configName = $"WEB_CONFIG_{selectedItem.ToUpper()}";
+                Ping pingSender = new Ping();
+                string server = configData[configName]["domain"];
+                PingReply reply = pingSender.Send(server);
+                UpdateProgress($"Check config ping to {server}", 50);
+
+                // Check the status of the ping reply
+                if (reply.Status == IPStatus.Success)
+                {
+                    UpdateProgress($"Ping to {server} successful", 100);
+                    UpdateProgress($"Roundtrip time: {reply.RoundtripTime} ms", 100);
+                    UpdateProgress($"Time to live: {reply.Options.Ttl}", 100);
+                    UpdateProgress($"Don't fragment: {reply.Options.DontFragment}", 100);
+                    UpdateProgress($"Buffer size: {reply.Buffer.Length}", 100);
+                    UpdateProgress($"Ping success...", 100);
+                    tsStatusOther.Text = "Ping success...";
+                    MessageBox.Show("Ping success!!", "Ping", MessageBoxButtons.OK);
+                }
+                else
+                {
+                    tsStatusOther.Text = "Ping fail...";
+                    UpdateProgress($"Ping to {configData[configName]["domain"]} failed. Status: {reply.Status}", 0, false);
+                    MessageBox.Show("Ping fail!!", "Ping", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                tsStatusOther.Text = "Ping fail...";
+                UpdateProgress("An error occurred: " + ex.Message, 0, false);
+                MessageBox.Show("Ping fail!!", "Ping", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            Invoke(new Action(() => tsProgressBar.Value = 0));
+            tsStatusOther.ForeColor = Color.Black;
+            tsStatusOther.Text = "";
+            lbLogs.Items.Clear();
+            webConfig.BringToFront();
+        }
+
+        private void btnWebCancel_Click_1(object sender, EventArgs e)
+        {
+            main.BringToFront();
+        }
+
+        private void btnOpenCmd_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo processStartInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                UseShellExecute = true
+            };
+
+            Process process = new Process
+            {
+                StartInfo = processStartInfo
+            };
+            process.Start();
         }
     }
 }

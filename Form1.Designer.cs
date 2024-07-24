@@ -32,6 +32,7 @@
             main = new Panel();
             lsbProjectList = new ListBox();
             gbDengerZone = new GroupBox();
+            btnWebConfig = new Button();
             btnQtCmd = new Button();
             btnQtDrop = new Button();
             btnQtUpload = new Button();
@@ -74,6 +75,15 @@
             btnSaveFTPConfig = new Button();
             lbLogs = new ListBox();
             logs = new Panel();
+            webConfig = new Panel();
+            btnOpenCmd = new Button();
+            btnPingWeb = new Button();
+            btnOpenWeb = new Button();
+            brnSaveWebConfig = new Button();
+            btnWebCancel = new Button();
+            gbWebConfig = new GroupBox();
+            txtbDomain = new TextBox();
+            label9 = new Label();
             main.SuspendLayout();
             gbDengerZone.SuspendLayout();
             gbManageZone.SuspendLayout();
@@ -81,6 +91,8 @@
             ftpConfig.SuspendLayout();
             gbFTP.SuspendLayout();
             logs.SuspendLayout();
+            webConfig.SuspendLayout();
+            gbWebConfig.SuspendLayout();
             SuspendLayout();
             // 
             // main
@@ -102,6 +114,7 @@
             // 
             // gbDengerZone
             // 
+            gbDengerZone.Controls.Add(btnWebConfig);
             gbDengerZone.Controls.Add(btnQtCmd);
             gbDengerZone.Controls.Add(btnQtDrop);
             gbDengerZone.Controls.Add(btnQtUpload);
@@ -111,6 +124,16 @@
             gbDengerZone.TabIndex = 1;
             gbDengerZone.TabStop = false;
             gbDengerZone.Text = "DangerZone";
+            // 
+            // btnWebConfig
+            // 
+            btnWebConfig.Location = new Point(29, 367);
+            btnWebConfig.Name = "btnWebConfig";
+            btnWebConfig.Size = new Size(200, 31);
+            btnWebConfig.TabIndex = 7;
+            btnWebConfig.Text = "Web";
+            btnWebConfig.UseVisualStyleBackColor = true;
+            btnWebConfig.Click += btnWebConfig_Click;
             // 
             // btnQtCmd
             // 
@@ -258,16 +281,16 @@
             gbFTP.Controls.Add(label1);
             gbFTP.Controls.Add(btnCancelFTPConfig);
             gbFTP.Controls.Add(btnSaveFTPConfig);
-            gbFTP.Location = new Point(10, 16);
+            gbFTP.Location = new Point(10, 12);
             gbFTP.Name = "gbFTP";
-            gbFTP.Size = new Size(777, 399);
+            gbFTP.Size = new Size(777, 403);
             gbFTP.TabIndex = 0;
             gbFTP.TabStop = false;
             gbFTP.Text = "FTP Config";
             // 
             // txtbScriptDir
             // 
-            txtbScriptDir.Location = new Point(147, 261);
+            txtbScriptDir.Location = new Point(147, 246);
             txtbScriptDir.Name = "txtbScriptDir";
             txtbScriptDir.Size = new Size(558, 27);
             txtbScriptDir.TabIndex = 27;
@@ -275,7 +298,7 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(33, 264);
+            label8.Location = new Point(33, 249);
             label8.Name = "label8";
             label8.Size = new Size(95, 20);
             label8.TabIndex = 26;
@@ -316,7 +339,7 @@
             // 
             // txtbConfigName
             // 
-            txtbConfigName.Location = new Point(147, 303);
+            txtbConfigName.Location = new Point(147, 288);
             txtbConfigName.Name = "txtbConfigName";
             txtbConfigName.Size = new Size(266, 27);
             txtbConfigName.TabIndex = 22;
@@ -324,7 +347,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(72, 306);
+            label3.Location = new Point(72, 291);
             label3.Name = "label3";
             label3.Size = new Size(56, 20);
             label3.TabIndex = 21;
@@ -342,7 +365,7 @@
             // 
             // btnOpenDirLocal
             // 
-            btnOpenDirLocal.Location = new Point(711, 174);
+            btnOpenDirLocal.Location = new Point(711, 159);
             btnOpenDirLocal.Name = "btnOpenDirLocal";
             btnOpenDirLocal.Size = new Size(44, 27);
             btnOpenDirLocal.TabIndex = 19;
@@ -352,7 +375,7 @@
             // 
             // txtbLocalDir
             // 
-            txtbLocalDir.Location = new Point(147, 174);
+            txtbLocalDir.Location = new Point(147, 159);
             txtbLocalDir.Name = "txtbLocalDir";
             txtbLocalDir.Size = new Size(558, 27);
             txtbLocalDir.TabIndex = 18;
@@ -360,7 +383,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(12, 177);
+            label7.Location = new Point(12, 162);
             label7.Name = "label7";
             label7.Size = new Size(116, 20);
             label7.TabIndex = 17;
@@ -368,7 +391,7 @@
             // 
             // txtbTargetDir
             // 
-            txtbTargetDir.Location = new Point(147, 219);
+            txtbTargetDir.Location = new Point(147, 204);
             txtbTargetDir.Name = "txtbTargetDir";
             txtbTargetDir.Size = new Size(558, 27);
             txtbTargetDir.TabIndex = 16;
@@ -376,7 +399,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(6, 222);
+            label6.Location = new Point(6, 207);
             label6.Name = "label6";
             label6.Size = new Size(122, 20);
             label6.TabIndex = 15;
@@ -384,7 +407,7 @@
             // 
             // btnOpenFileFTP
             // 
-            btnOpenFileFTP.Location = new Point(711, 129);
+            btnOpenFileFTP.Location = new Point(711, 114);
             btnOpenFileFTP.Name = "btnOpenFileFTP";
             btnOpenFileFTP.Size = new Size(44, 27);
             btnOpenFileFTP.TabIndex = 14;
@@ -394,7 +417,7 @@
             // 
             // txtbPPKFile
             // 
-            txtbPPKFile.Location = new Point(147, 129);
+            txtbPPKFile.Location = new Point(147, 114);
             txtbPPKFile.Name = "txtbPPKFile";
             txtbPPKFile.Size = new Size(558, 27);
             txtbPPKFile.TabIndex = 13;
@@ -431,7 +454,7 @@
             // ckIsPrivateKey
             // 
             ckIsPrivateKey.AutoSize = true;
-            ckIsPrivateKey.Location = new Point(17, 131);
+            ckIsPrivateKey.Location = new Point(17, 116);
             ckIsPrivateKey.Name = "ckIsPrivateKey";
             ckIsPrivateKey.Size = new Size(128, 24);
             ckIsPrivateKey.TabIndex = 7;
@@ -510,11 +533,102 @@
             logs.Size = new Size(797, 420);
             logs.TabIndex = 1;
             // 
+            // webConfig
+            // 
+            webConfig.Controls.Add(btnOpenCmd);
+            webConfig.Controls.Add(btnPingWeb);
+            webConfig.Controls.Add(btnOpenWeb);
+            webConfig.Controls.Add(brnSaveWebConfig);
+            webConfig.Controls.Add(btnWebCancel);
+            webConfig.Controls.Add(gbWebConfig);
+            webConfig.Location = new Point(0, 0);
+            webConfig.Name = "webConfig";
+            webConfig.Size = new Size(799, 423);
+            webConfig.TabIndex = 5;
+            // 
+            // btnOpenCmd
+            // 
+            btnOpenCmd.Location = new Point(22, 307);
+            btnOpenCmd.Name = "btnOpenCmd";
+            btnOpenCmd.Size = new Size(200, 31);
+            btnOpenCmd.TabIndex = 11;
+            btnOpenCmd.Text = "Cmd";
+            btnOpenCmd.UseVisualStyleBackColor = true;
+            btnOpenCmd.Click += btnOpenCmd_Click;
+            // 
+            // btnPingWeb
+            // 
+            btnPingWeb.Location = new Point(22, 339);
+            btnPingWeb.Name = "btnPingWeb";
+            btnPingWeb.Size = new Size(200, 31);
+            btnPingWeb.TabIndex = 10;
+            btnPingWeb.Text = "Ping";
+            btnPingWeb.UseVisualStyleBackColor = true;
+            btnPingWeb.Click += btnPingWeb_Click;
+            // 
+            // btnOpenWeb
+            // 
+            btnOpenWeb.Location = new Point(22, 371);
+            btnOpenWeb.Name = "btnOpenWeb";
+            btnOpenWeb.Size = new Size(200, 31);
+            btnOpenWeb.TabIndex = 8;
+            btnOpenWeb.Text = "Open";
+            btnOpenWeb.UseVisualStyleBackColor = true;
+            btnOpenWeb.Click += btnOpenWeb_Click;
+            // 
+            // brnSaveWebConfig
+            // 
+            brnSaveWebConfig.Location = new Point(577, 339);
+            brnSaveWebConfig.Name = "brnSaveWebConfig";
+            brnSaveWebConfig.Size = new Size(200, 31);
+            brnSaveWebConfig.TabIndex = 9;
+            brnSaveWebConfig.Text = "Save";
+            brnSaveWebConfig.UseVisualStyleBackColor = true;
+            brnSaveWebConfig.Click += brnSaveWebConfig_Click;
+            // 
+            // btnWebCancel
+            // 
+            btnWebCancel.Location = new Point(577, 371);
+            btnWebCancel.Name = "btnWebCancel";
+            btnWebCancel.Size = new Size(200, 31);
+            btnWebCancel.TabIndex = 8;
+            btnWebCancel.Text = "Cancel";
+            btnWebCancel.UseVisualStyleBackColor = true;
+            btnWebCancel.Click += btnWebCancel_Click_1;
+            // 
+            // gbWebConfig
+            // 
+            gbWebConfig.Controls.Add(txtbDomain);
+            gbWebConfig.Controls.Add(label9);
+            gbWebConfig.Location = new Point(22, 30);
+            gbWebConfig.Name = "gbWebConfig";
+            gbWebConfig.Size = new Size(755, 73);
+            gbWebConfig.TabIndex = 1;
+            gbWebConfig.TabStop = false;
+            gbWebConfig.Text = "Web";
+            // 
+            // txtbDomain
+            // 
+            txtbDomain.Location = new Point(94, 29);
+            txtbDomain.Name = "txtbDomain";
+            txtbDomain.Size = new Size(639, 27);
+            txtbDomain.TabIndex = 1;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(19, 32);
+            label9.Name = "label9";
+            label9.Size = new Size(69, 20);
+            label9.TabIndex = 0;
+            label9.Text = "Domain :";
+            // 
             // FTPManagement
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(webConfig);
             Controls.Add(main);
             Controls.Add(ftpConfig);
             Controls.Add(logs);
@@ -531,6 +645,9 @@
             gbFTP.ResumeLayout(false);
             gbFTP.PerformLayout();
             logs.ResumeLayout(false);
+            webConfig.ResumeLayout(false);
+            gbWebConfig.ResumeLayout(false);
+            gbWebConfig.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -581,5 +698,15 @@
         private Panel logs;
         private Button btnQtDrop;
         private Button btnQtCmd;
+        private Button btnWebConfig;
+        private Panel webConfig;
+        private Label label9;
+        private GroupBox gbWebConfig;
+        private TextBox txtbDomain;
+        private Button btnPingWeb;
+        private Button btnOpenWeb;
+        private Button brnSaveWebConfig;
+        private Button btnWebCancel;
+        private Button btnOpenCmd;
     }
 }
