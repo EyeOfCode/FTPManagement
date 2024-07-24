@@ -47,6 +47,8 @@
             tsStatusOther = new ToolStripStatusLabel();
             ftpConfig = new Panel();
             gbFTP = new GroupBox();
+            txtbIgnore = new TextBox();
+            label10 = new Label();
             txtbScriptDir = new TextBox();
             label8 = new Label();
             btnDropFTP = new Button();
@@ -73,8 +75,8 @@
             label1 = new Label();
             btnCancelFTPConfig = new Button();
             btnSaveFTPConfig = new Button();
-            lbLogs = new ListBox();
             logs = new Panel();
+            rtbLogs = new RichTextBox();
             webConfig = new Panel();
             btnOpenCmd = new Button();
             btnPingWeb = new Button();
@@ -255,6 +257,8 @@
             // 
             // gbFTP
             // 
+            gbFTP.Controls.Add(txtbIgnore);
+            gbFTP.Controls.Add(label10);
             gbFTP.Controls.Add(txtbScriptDir);
             gbFTP.Controls.Add(label8);
             gbFTP.Controls.Add(btnDropFTP);
@@ -287,6 +291,22 @@
             gbFTP.TabIndex = 0;
             gbFTP.TabStop = false;
             gbFTP.Text = "FTP Config";
+            // 
+            // txtbIgnore
+            // 
+            txtbIgnore.Location = new Point(147, 324);
+            txtbIgnore.Name = "txtbIgnore";
+            txtbIgnore.Size = new Size(494, 27);
+            txtbIgnore.TabIndex = 29;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new Point(69, 327);
+            label10.Name = "label10";
+            label10.Size = new Size(59, 20);
+            label10.TabIndex = 28;
+            label10.Text = "Ignore :";
             // 
             // txtbScriptDir
             // 
@@ -517,21 +537,21 @@
             btnSaveFTPConfig.UseVisualStyleBackColor = true;
             btnSaveFTPConfig.Click += btnSaveFTPConfig_Click;
             // 
-            // lbLogs
-            // 
-            lbLogs.FormattingEnabled = true;
-            lbLogs.Location = new Point(9, 12);
-            lbLogs.Name = "lbLogs";
-            lbLogs.Size = new Size(779, 404);
-            lbLogs.TabIndex = 5;
-            // 
             // logs
             // 
-            logs.Controls.Add(lbLogs);
+            logs.Controls.Add(rtbLogs);
             logs.Location = new Point(0, 0);
             logs.Name = "logs";
             logs.Size = new Size(797, 420);
             logs.TabIndex = 1;
+            // 
+            // rtbLogs
+            // 
+            rtbLogs.Location = new Point(10, 12);
+            rtbLogs.Name = "rtbLogs";
+            rtbLogs.Size = new Size(777, 403);
+            rtbLogs.TabIndex = 6;
+            rtbLogs.Text = "";
             // 
             // webConfig
             // 
@@ -629,9 +649,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(main);
-            Controls.Add(webConfig);
-            Controls.Add(ftpConfig);
             Controls.Add(logs);
+            Controls.Add(ftpConfig);
+            Controls.Add(webConfig);
             Controls.Add(footer);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FTPManagement";
@@ -690,7 +710,6 @@
         private Button btnDetailFTP;
         private Button btnQtUpload;
         private Button btnUploadFTP;
-        private ListBox lbLogs;
         private Button btnCmd;
         private Button btnDropFTP;
         private TextBox txtbScriptDir;
@@ -708,5 +727,8 @@
         private Button brnSaveWebConfig;
         private Button btnWebCancel;
         private Button btnOpenCmd;
+        private TextBox txtbIgnore;
+        private Label label10;
+        private RichTextBox rtbLogs;
     }
 }

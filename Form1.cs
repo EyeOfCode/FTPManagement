@@ -42,6 +42,8 @@ namespace FTPManagement
             txtbTargetDir.Text = "";
             txtbLocalDir.Text = "";
             txtbConfigName.Text = "";
+            txtbIgnore.Text = "";
+            txtbScriptDir.Text = "";
             enableFTPFORM();
             ftpConfig.BringToFront();
         }
@@ -177,6 +179,7 @@ namespace FTPManagement
             config.Write("privateKeyPath", txtbPPKFile.Text, configName);
             config.Write("configName", txtbConfigName.Text, configName);
             config.Write("scriptPath", txtbScriptDir.Text, configName);
+            config.Write("ignore", txtbIgnore.Text, configName);
             Invoke(new Action(() => tsProgressBar.Value = 80));
             LoadConfig(section, txtbConfigName.Text);
             LoadConfig();
@@ -200,6 +203,7 @@ namespace FTPManagement
             configData[session]["localDirectory"] = config.Read("localDirectory", session);
             configData[session]["configName"] = config.Read("configName", session);
             configData[session]["scriptPath"] = config.Read("scriptPath", session);
+            configData[session]["ignore"] = config.Read("ignore", session);
 
             if (!configData[session]["usePrivateKey"].ToLower().Equals("true"))
             {
@@ -228,6 +232,7 @@ namespace FTPManagement
                     txtbLocalDir.Text = configData[configName]["localDirectory"];
                     txtbConfigName.Text = configData[configName]["configName"];
                     txtbScriptDir.Text = configData[configName]["scriptPath"];
+                    txtbIgnore.Text = configData[configName]["ignore"];
                 }
                 else
                 {
@@ -288,6 +293,7 @@ namespace FTPManagement
         {
             if (lsbProjectList.SelectedItem != null)
             {
+                enableFTPFORM();
                 string selectedItem = lsbProjectList.SelectedItem.ToString();
                 if (selectedItem != null)
                 {
@@ -317,6 +323,7 @@ namespace FTPManagement
                 config.DeleteKey("privateKeyPath", configName);
                 config.DeleteKey("configName", configName);
                 config.DeleteKey("scriptPath", configName);
+                config.DeleteKey("txtbIgnore", configName);
                 config.DeleteSection(configName);
                 lsbProjectList.Items.Remove(selectedItem);
                 Invoke(new Action(() => tsProgressBar.Value = 100));
@@ -343,6 +350,7 @@ namespace FTPManagement
             btnCmd.Visible = false;
             btnDropFTP.Visible = false;
             txtbScriptDir.ReadOnly = false;
+            txtbIgnore.ReadOnly = false;
         }
 
         private void disableFTPFORM()
@@ -363,6 +371,7 @@ namespace FTPManagement
             btnCmd.Visible = true;
             btnDropFTP.Visible = true;
             txtbScriptDir.ReadOnly = true;
+            txtbIgnore.ReadOnly = true;
         }
 
         private void btnDetailFTP_Click(object sender, EventArgs e)
@@ -398,8 +407,19 @@ namespace FTPManagement
                 Invoke(new Action(() => tsProgressBar.Value = 100));
                 tsStatusOther.Text = "Starting upload...";
                 sftp.OnProgressReport += UpdateProgress;
-                sftp.UploadFTP(configData[configName]["localDirectory"], configData[configName]["targetDirectory"]);
-                MessageBox.Show("Upload success!!", "Upload FTP", MessageBoxButtons.OK);
+                string[] ignore = null;
+                if (!configData[configName]["ignore"].Equals(string.Empty))
+                {
+                    ignore = configData[configName]["ignore"].Split(',').Select(s => s.Trim()).ToArray();
+                }
+                sftp.UploadFTP(configData[configName]["localDirectory"], configData[configName]["targetDirectory"], ignore);
+                if (tsProgressBar.Value >= 100)
+                {
+                    MessageBox.Show("Upload success!!", "Upload FTP", MessageBoxButtons.OK);
+                }else
+                {
+                    MessageBox.Show("Upload fail!!", "Upload FTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -408,7 +428,7 @@ namespace FTPManagement
             Invoke(new Action(() => tsProgressBar.Value = 0));
             tsStatusOther.ForeColor = Color.Black;
             tsStatusOther.Text = "";
-            lbLogs.Items.Clear();
+            rtbLogs.Clear();
         }
 
         private void btnUploadFTP_Click(object sender, EventArgs e)
@@ -426,8 +446,8 @@ namespace FTPManagement
             }
             tsStatusOther.ForeColor = status ? Color.Green : Color.Red;
             tsProgressBar.Value = percentage;
-            lbLogs.Items.Add(message + Environment.NewLine);
-            lbLogs.ForeColor = status ? Color.Green : Color.Red;
+            rtbLogs.AppendText(message + Environment.NewLine);
+            rtbLogs.ForeColor = status ? Color.Green : Color.Red;
         }
 
         private void runCmdFTP()
@@ -458,7 +478,7 @@ namespace FTPManagement
             }
             tsStatusOther.ForeColor = Color.Black;
             tsStatusOther.Text = "";
-            lbLogs.Items.Clear();
+            rtbLogs.Clear();
             Invoke(new Action(() => tsProgressBar.Value = 0));
         }
 
@@ -496,7 +516,7 @@ namespace FTPManagement
             }
             tsStatusOther.ForeColor = Color.Black;
             tsStatusOther.Text = "";
-            lbLogs.Items.Clear();
+            rtbLogs.Clear();
             Invoke(new Action(() => tsProgressBar.Value = 0));
         }
 
@@ -601,7 +621,7 @@ namespace FTPManagement
                     return;
                 }
                 logs.BringToFront();
-                lbLogs.Items.Clear();
+                rtbLogs.Clear();
                 tsStatusOther.Text = "Start ping ...";
                 UpdateProgress("Start ping...", 0);
                 string configName = $"WEB_CONFIG_{selectedItem.ToUpper()}";
@@ -638,7 +658,7 @@ namespace FTPManagement
             Invoke(new Action(() => tsProgressBar.Value = 0));
             tsStatusOther.ForeColor = Color.Black;
             tsStatusOther.Text = "";
-            lbLogs.Items.Clear();
+            rtbLogs.Clear();
             webConfig.BringToFront();
         }
 

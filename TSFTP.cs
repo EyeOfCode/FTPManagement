@@ -60,29 +60,66 @@ namespace FTPManagement
         {
             return session.Opened;
         }
+        
+        public void upload(string localPath, string remotePath)
+        {
+            TransferOptions transferOptions = new TransferOptions();
+            transferOptions.TransferMode = TransferMode.Binary;
+            TransferOperationResult transferResult;
+            transferOptions.FilePermissions = null;
+            transferOptions.PreserveTimestamp = false;
+            transferResult = session.PutFiles(localPath, remotePath, false, transferOptions);
+            transferResult.Check();
+            int totalFiles = transferResult.Transfers.Count;
+            int uploadedFiles = 0;
+            OnProgressReport?.Invoke($"Upload from {localPath} to {remotePath}", 0);
+            foreach (TransferEventArgs transfer in transferResult.Transfers)
+            {
+                uploadedFiles++;
+                int progress = (int)((double)uploadedFiles / totalFiles * 100);
+                OnProgressReport?.Invoke($"Upload of {transfer.FileName} succeeded. {progress}%", progress);
+            }
+        }
 
-        public void UploadFTP(string localPath, string remotePath)
+        public void UploadFTP(string localPath, string remotePath, string[] ignore = null)
         {
             try
             {
                 EnsureDirectoryExists(remotePath);
-                TransferOptions transferOptions = new TransferOptions();
-                transferOptions.TransferMode = TransferMode.Binary;
-                TransferOperationResult transferResult;
-                transferOptions.FilePermissions = null;
-                transferOptions.PreserveTimestamp = false;
-                transferResult = session.PutFiles(localPath, remotePath, false, transferOptions);
-                transferResult.Check();
-                int totalFiles = transferResult.Transfers.Count;
-                int uploadedFiles = 0;
-                OnProgressReport?.Invoke($"Upload from {localPath} to {remotePath}", 0);
-                foreach (TransferEventArgs transfer in transferResult.Transfers)
+                if (ignore != null && ignore.Length > 0)
                 {
-                    uploadedFiles++;
-                    int progress = (int)((double)uploadedFiles / totalFiles * 100);
-                    OnProgressReport?.Invoke($"Upload of {transfer.FileName} succeeded. Progress: {progress}%", progress);
+                    var util = new Util();
+                    var DirToUpload = Directory.GetDirectories(localPath, "*", SearchOption.AllDirectories).Where(dir => !ignore.Any(pattern => util.IsMatchFileName(Path.GetFileName(dir), pattern) || dir == pattern || dir.EndsWith(pattern, StringComparison.OrdinalIgnoreCase))).ToArray();
+                    foreach (var dirPath in DirToUpload)
+                    {
+                        string relativePath = Path.GetRelativePath(localPath, dirPath);
+                        string remoteDirPath = Path.Combine(remotePath, relativePath).Replace("\\", "/");
+                        if (!util.IsUnderIgnoredDirectory(relativePath, ignore))
+                        {
+                            EnsureDirectoryExists(remoteDirPath);
+                            if (!DirectoryExists(remoteDirPath))
+                            {
+                                OnProgressReport?.Invoke($"Upload failed: {remoteDirPath}", 0, false);
+                                return;
+                            }
+                        }
+                    }
+                    var filesToUpload = Directory.GetFiles(localPath, "*", SearchOption.AllDirectories).Where(file => !ignore.Any(pattern => util.IsMatchFileName(Path.GetFileName(file), pattern) || file == pattern || file.EndsWith(pattern, StringComparison.OrdinalIgnoreCase))).ToArray();
+                    foreach (var filePath in filesToUpload)
+                    {
+                        string relativePath = Path.GetRelativePath(localPath, filePath);
+                        if (relativePath != "desktop.ini" && !util.IsUnderIgnoredDirectory(relativePath, ignore))
+                        {
+                            OnProgressReport?.Invoke($"Start upload: {filePath}", 0);
+                            string remoteFilePath = Path.Combine(remotePath, relativePath).Replace("\\", "/");
+                            upload(filePath, remoteFilePath);
+                        }
+                    }
                 }
-                OnProgressReport?.Invoke("Upload completed successfully!", 100);
+                else
+                {
+                    upload(localPath, remotePath);
+                }
             }
             catch (Exception e)
             {
