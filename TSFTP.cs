@@ -68,15 +68,15 @@ namespace FTPManagement
             TransferOperationResult transferResult;
             transferOptions.FilePermissions = null;
             transferOptions.PreserveTimestamp = false;
+            OnProgressReport?.Invoke($"Upload from {localPath} to {remotePath}", 0);
             transferResult = session.PutFiles(localPath, remotePath, false, transferOptions);
             transferResult.Check();
             int totalFiles = transferResult.Transfers.Count;
             int uploadedFiles = 0;
-            OnProgressReport?.Invoke($"Upload from {localPath} to {remotePath}", 0);
             foreach (TransferEventArgs transfer in transferResult.Transfers)
             {
                 uploadedFiles++;
-                int progress = (int)((double)uploadedFiles / totalFiles * 100);
+                int progress = (int)(((double)uploadedFiles / totalFiles) * 100);
                 OnProgressReport?.Invoke($"Upload of {transfer.FileName} succeeded. {progress}%", progress);
             }
         }
