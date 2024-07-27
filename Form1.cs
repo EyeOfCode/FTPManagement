@@ -448,6 +448,7 @@ namespace FTPManagement
             tsProgressBar.Value = percentage;
             rtbLogs.AppendText(message + Environment.NewLine);
             rtbLogs.ForeColor = status ? Color.Green : Color.Red;
+            rtbLogs.ScrollToCaret();
         }
 
         private void runCmdFTP()
