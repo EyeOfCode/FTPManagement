@@ -11,6 +11,8 @@ using System;
 using Renci.SshNet;
 using System.Security.Policy;
 using System.Net.NetworkInformation;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.VisualBasic.Logging;
 
 namespace FTPManagement
 {
@@ -34,7 +36,7 @@ namespace FTPManagement
         private void btnAddProject_Click(object sender, EventArgs e)
         {
             txtbHostName.Text = "";
-            txtbPort.Text = "";
+            txtbPort.Text = "22";
             txtbUsername.Text = "";
             txtbPassword.Text = "";
             ckIsPrivateKey.Checked = false;
@@ -248,6 +250,7 @@ namespace FTPManagement
             section = "LIST_SFTP";
             if (_section.ToLower().Equals(section.ToLower()) || _section.Equals(string.Empty))
             {
+                Dictionary<string, Dictionary<string, string>> projectData = new Dictionary<string, Dictionary<string, string>>();
                 List<string> sections = config.GetAllSections();
                 var sftpKeys = sections.Where(key => key.StartsWith("SFTP_"));
                 lsbProjectList.Items.Clear();
@@ -256,12 +259,46 @@ namespace FTPManagement
                     if (configData.ContainsKey(key))
                     {
                         string name = configData[key]["configName"];
+                        string host = configData[key]["host"];
+                        string username = configData[key]["username"];
+                        string port = configData[key]["port"];
+                        string localDir = configData[key]["localDirectory"];
+                        string tagetDir = configData[key]["targetDirectory"];
+                        string scripDir = configData[key]["scriptPath"];
+                        string ignoreFile = configData[key]["ignore"];
+
+                        projectData[name] = new Dictionary<string, string>
+                        {
+                            { "host", host },
+                            { "port", port },
+                            { "username", username },
+                            { "localDir", localDir },
+                            { "targetDir", tagetDir },
+                            { "ignore", ignoreFile },
+                            { "scriptDir", scripDir },
+                        };
+
                         lsbProjectList.Items.Add(name);
                     }
                 }
                 if (lsbProjectList.Items.Count > 0)
                 {
                     lsbProjectList.SelectedIndex = 0;
+                    string selectedName = lsbProjectList.Text;
+
+                    if (projectData.ContainsKey(selectedName))
+                    {
+                        var data = projectData[selectedName];
+                        int maxLength = 15;
+
+                        lblHostCurrentName.Text = $"Host Name: {selectedName}";
+                        lblHostCurrent.Text = $"Host: {data.GetValueOrDefault("host", "-")}:{data.GetValueOrDefault("port", "-")}";
+                        lblUserNameCurrent.Text = $"Username: {data.GetValueOrDefault("username", "-")}";
+                        lblLocalDirCurrent.Text = $"Local Dir: {TruncateText(data.GetValueOrDefault("localDir", "-"), maxLength)}";
+                        lblTragetDirCurrent.Text = $"Target Dir: {TruncateText(data.GetValueOrDefault("targetDir", "-"), maxLength)}";
+                        lblScriptDitCurrent.Text = $"Script Dir: {TruncateText(data.GetValueOrDefault("scriptDir", "-"), maxLength)}";
+                        lblIgnoreFileCureent.Text = $"Ignore File: {TruncateText(data.GetValueOrDefault("ignore", "-"), maxLength)}";
+                    }
                 }
             }
 
@@ -287,6 +324,12 @@ namespace FTPManagement
                     }
                 }
             }
+        }
+
+        private string TruncateText(string text, int maxLength)
+        {
+            if (string.IsNullOrEmpty(text)) return "-";
+            return text.Length > maxLength ? text.Substring(0, maxLength) + "..." : text;
         }
 
         private void btnEditProject_Click(object sender, EventArgs e)
@@ -416,7 +459,8 @@ namespace FTPManagement
                 if (tsProgressBar.Value >= 100)
                 {
                     MessageBox.Show("Upload success!!", "Upload FTP", MessageBoxButtons.OK);
-                }else
+                }
+                else
                 {
                     MessageBox.Show("Upload fail!!", "Upload FTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -549,7 +593,7 @@ namespace FTPManagement
 
         private void btnQtCmd_Click(object sender, EventArgs e)
         {
-            DialogResult confirm = MessageBox.Show("Cmd!!", "CMD", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            DialogResult confirm = MessageBox.Show("Run Cmd!!", "CMD", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm == DialogResult.Yes)
             {
                 runCmdFTP();
@@ -681,6 +725,37 @@ namespace FTPManagement
                 StartInfo = processStartInfo
             };
             process.Start();
+        }
+
+        private void lsbProjectList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lsbProjectList.SelectedItem == null) return;
+            string selectedItem = lsbProjectList.SelectedItem.ToString();
+            LoadConfig("SFTP", selectedItem);
+            string configName = $"SFTP_{selectedItem}";
+            if (configData.ContainsKey(configName))
+            {
+                var configSection = configData[configName];
+                var data = new Dictionary<string, string>
+                {
+                    ["host"] = configSection["host"],
+                    ["port"] = configSection["port"],
+                    ["username"] = configSection["username"],
+                    ["localDir"] = configSection["localDirectory"],
+                    ["targetDir"] = configSection["targetDirectory"],
+                    ["scriptDir"] = configSection["scriptPath"],
+                    ["ignore"] = configSection["ignore"]
+                };
+
+                const int MAX_DISPLAY_LENGTH = 15;
+                lblHostCurrentName.Text = $"Host Name: {selectedItem}";
+                lblHostCurrent.Text = $"Host: {data.GetValueOrDefault("host", "-")}:{data.GetValueOrDefault("port", "-")}";
+                lblUserNameCurrent.Text = $"Username: {data.GetValueOrDefault("username", "-")}";
+                lblLocalDirCurrent.Text = $"Local Dir: {TruncateText(data.GetValueOrDefault("localDir", "-"), MAX_DISPLAY_LENGTH)}";
+                lblTragetDirCurrent.Text = $"Target Dir: {TruncateText(data.GetValueOrDefault("targetDir", "-"), MAX_DISPLAY_LENGTH)}";
+                lblScriptDitCurrent.Text = $"Script Dir: {TruncateText(data.GetValueOrDefault("scriptDir", "-"), MAX_DISPLAY_LENGTH)}";
+                lblIgnoreFileCureent.Text = $"Ignore File: {TruncateText(data.GetValueOrDefault("ignore", "-"), MAX_DISPLAY_LENGTH)}";
+            }
         }
     }
 }

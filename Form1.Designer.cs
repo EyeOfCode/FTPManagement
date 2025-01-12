@@ -32,6 +32,14 @@
             main = new Panel();
             lsbProjectList = new ListBox();
             gbDengerZone = new GroupBox();
+            CurrentConfig = new GroupBox();
+            lblIgnoreFileCureent = new Label();
+            lblScriptDitCurrent = new Label();
+            lblTragetDirCurrent = new Label();
+            lblLocalDirCurrent = new Label();
+            lblUserNameCurrent = new Label();
+            lblHostCurrentName = new Label();
+            lblHostCurrent = new Label();
             btnWebConfig = new Button();
             btnQtCmd = new Button();
             btnQtDrop = new Button();
@@ -88,6 +96,7 @@
             label9 = new Label();
             main.SuspendLayout();
             gbDengerZone.SuspendLayout();
+            CurrentConfig.SuspendLayout();
             gbManageZone.SuspendLayout();
             footer.SuspendLayout();
             ftpConfig.SuspendLayout();
@@ -113,9 +122,11 @@
             lsbProjectList.Name = "lsbProjectList";
             lsbProjectList.Size = new Size(265, 384);
             lsbProjectList.TabIndex = 0;
+            lsbProjectList.SelectedIndexChanged += lsbProjectList_SelectedIndexChanged;
             // 
             // gbDengerZone
             // 
+            gbDengerZone.Controls.Add(CurrentConfig);
             gbDengerZone.Controls.Add(btnWebConfig);
             gbDengerZone.Controls.Add(btnQtCmd);
             gbDengerZone.Controls.Add(btnQtDrop);
@@ -127,9 +138,88 @@
             gbDengerZone.TabStop = false;
             gbDengerZone.Text = "DangerZone";
             // 
+            // CurrentConfig
+            // 
+            CurrentConfig.Controls.Add(lblIgnoreFileCureent);
+            CurrentConfig.Controls.Add(lblScriptDitCurrent);
+            CurrentConfig.Controls.Add(lblTragetDirCurrent);
+            CurrentConfig.Controls.Add(lblLocalDirCurrent);
+            CurrentConfig.Controls.Add(lblUserNameCurrent);
+            CurrentConfig.Controls.Add(lblHostCurrentName);
+            CurrentConfig.Controls.Add(lblHostCurrent);
+            CurrentConfig.Location = new Point(15, 33);
+            CurrentConfig.Name = "CurrentConfig";
+            CurrentConfig.Size = new Size(222, 210);
+            CurrentConfig.TabIndex = 8;
+            CurrentConfig.TabStop = false;
+            CurrentConfig.Text = "Current Config";
+            // 
+            // lblIgnoreFileCureent
+            // 
+            lblIgnoreFileCureent.AutoSize = true;
+            lblIgnoreFileCureent.Location = new Point(11, 181);
+            lblIgnoreFileCureent.Name = "lblIgnoreFileCureent";
+            lblIgnoreFileCureent.Size = new Size(86, 20);
+            lblIgnoreFileCureent.TabIndex = 6;
+            lblIgnoreFileCureent.Text = "Ignore File: ";
+            // 
+            // lblScriptDitCurrent
+            // 
+            lblScriptDitCurrent.AutoSize = true;
+            lblScriptDitCurrent.Location = new Point(11, 159);
+            lblScriptDitCurrent.Name = "lblScriptDitCurrent";
+            lblScriptDitCurrent.Size = new Size(74, 20);
+            lblScriptDitCurrent.TabIndex = 5;
+            lblScriptDitCurrent.Text = "Script Dir:";
+            // 
+            // lblTragetDirCurrent
+            // 
+            lblTragetDirCurrent.AutoSize = true;
+            lblTragetDirCurrent.Location = new Point(11, 132);
+            lblTragetDirCurrent.Name = "lblTragetDirCurrent";
+            lblTragetDirCurrent.Size = new Size(78, 20);
+            lblTragetDirCurrent.TabIndex = 4;
+            lblTragetDirCurrent.Text = "Traget Dir:";
+            // 
+            // lblLocalDirCurrent
+            // 
+            lblLocalDirCurrent.AutoSize = true;
+            lblLocalDirCurrent.Location = new Point(11, 106);
+            lblLocalDirCurrent.Name = "lblLocalDirCurrent";
+            lblLocalDirCurrent.Size = new Size(71, 20);
+            lblLocalDirCurrent.TabIndex = 3;
+            lblLocalDirCurrent.Text = "Local Dir:";
+            // 
+            // lblUserNameCurrent
+            // 
+            lblUserNameCurrent.AutoSize = true;
+            lblUserNameCurrent.Location = new Point(11, 78);
+            lblUserNameCurrent.Name = "lblUserNameCurrent";
+            lblUserNameCurrent.Size = new Size(78, 20);
+            lblUserNameCurrent.TabIndex = 2;
+            lblUserNameCurrent.Text = "Username:";
+            // 
+            // lblHostCurrentName
+            // 
+            lblHostCurrentName.AutoSize = true;
+            lblHostCurrentName.Location = new Point(11, 29);
+            lblHostCurrentName.Name = "lblHostCurrentName";
+            lblHostCurrentName.Size = new Size(87, 20);
+            lblHostCurrentName.TabIndex = 1;
+            lblHostCurrentName.Text = "Host Name:";
+            // 
+            // lblHostCurrent
+            // 
+            lblHostCurrent.AutoSize = true;
+            lblHostCurrent.Location = new Point(11, 54);
+            lblHostCurrent.Name = "lblHostCurrent";
+            lblHostCurrent.Size = new Size(43, 20);
+            lblHostCurrent.TabIndex = 0;
+            lblHostCurrent.Text = "Host:";
+            // 
             // btnWebConfig
             // 
-            btnWebConfig.Location = new Point(29, 367);
+            btnWebConfig.Location = new Point(26, 367);
             btnWebConfig.Name = "btnWebConfig";
             btnWebConfig.Size = new Size(200, 31);
             btnWebConfig.TabIndex = 7;
@@ -139,17 +229,17 @@
             // 
             // btnQtCmd
             // 
-            btnQtCmd.Location = new Point(29, 100);
+            btnQtCmd.Location = new Point(26, 317);
             btnQtCmd.Name = "btnQtCmd";
             btnQtCmd.Size = new Size(200, 31);
             btnQtCmd.TabIndex = 6;
-            btnQtCmd.Text = "Cmd";
+            btnQtCmd.Text = "Run Script";
             btnQtCmd.UseVisualStyleBackColor = true;
             btnQtCmd.Click += btnQtCmd_Click;
             // 
             // btnQtDrop
             // 
-            btnQtDrop.Location = new Point(29, 70);
+            btnQtDrop.Location = new Point(26, 287);
             btnQtDrop.Name = "btnQtDrop";
             btnQtDrop.Size = new Size(200, 31);
             btnQtDrop.TabIndex = 5;
@@ -159,7 +249,7 @@
             // 
             // btnQtUpload
             // 
-            btnQtUpload.Location = new Point(29, 40);
+            btnQtUpload.Location = new Point(26, 257);
             btnQtUpload.Name = "btnQtUpload";
             btnQtUpload.Size = new Size(200, 31);
             btnQtUpload.TabIndex = 4;
@@ -341,7 +431,7 @@
             btnCmd.Name = "btnCmd";
             btnCmd.Size = new Size(121, 31);
             btnCmd.TabIndex = 24;
-            btnCmd.Text = "Cmd";
+            btnCmd.Text = "Run Script";
             btnCmd.UseVisualStyleBackColor = true;
             btnCmd.Visible = false;
             btnCmd.Click += btnCmd_Click;
@@ -649,15 +739,17 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(main);
-            Controls.Add(logs);
             Controls.Add(ftpConfig);
             Controls.Add(webConfig);
+            Controls.Add(logs);
             Controls.Add(footer);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FTPManagement";
             Text = "FTPManagement";
             main.ResumeLayout(false);
             gbDengerZone.ResumeLayout(false);
+            CurrentConfig.ResumeLayout(false);
+            CurrentConfig.PerformLayout();
             gbManageZone.ResumeLayout(false);
             footer.ResumeLayout(false);
             footer.PerformLayout();
@@ -730,5 +822,13 @@
         private TextBox txtbIgnore;
         private Label label10;
         private RichTextBox rtbLogs;
+        private GroupBox CurrentConfig;
+        private Label lblHostCurrent;
+        private Label lblHostCurrentName;
+        private Label lblUserNameCurrent;
+        private Label lblLocalDirCurrent;
+        private Label lblTragetDirCurrent;
+        private Label lblScriptDitCurrent;
+        private Label lblIgnoreFileCureent;
     }
 }
